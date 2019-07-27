@@ -29,12 +29,12 @@ enum mod
     TC1 = 6, //timer
     TC3 = 7
 };
-volatile enum 
-{
+volatile enum {
     POWER,
     PAGEUP,
     PAGEDW,
     START,
+    PAUSE,
     UP,
     DOWN,
     SWITCH,
@@ -42,7 +42,6 @@ volatile enum
     LEFT,
     RIGHT,
     NUL,
-    OK,
     AUTO,
     NEXT
 } ir;
@@ -195,9 +194,30 @@ inline void ir_ctrl()
             TCCR3B = tim_clock;
             break;
         case BELL:
+            flag &= 0xf3;
+            flag1 &= 0xfb;
+            asm("cbi PORTF,PORTF4");
+            flag |= 0x02;
+            mode = tmp;
             break;
         default:
             TCCR0B = tim_clock;
+            break;
+        }
+        break;
+    case PAUSE:
+        switch (mode)
+        {
+        case TC1:
+            TCCR1B = 0x00;
+            break;
+        case TC3:
+            TCCR3B = 0x00;
+            break;
+        case BELL:
+            break;
+        default:
+            TCCR0B = 0x00;
             break;
         }
         break;
@@ -250,13 +270,6 @@ inline void ir_ctrl()
                 TCNT4 = 0;
             }
         }
-        break;
-    case OK:
-        flag &= 0xf3;
-        flag1 &= 0xfb;
-        asm("cbi PORTF,PORTF4");
-        flag |= 0x02;
-        mode = tmp;
         break;
     case STOP:
         switch (mode)
