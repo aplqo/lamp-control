@@ -364,9 +364,9 @@ void display_time(unsigned char pos, unsigned int* dat)
 {
 
     lcd_write(0, 0x80 | pos);
-    unsigned char t = (*dat), bit = 0;
-    unsigned int ratio = 36000;
-    for (unsigned char i = 0; i < 8; i++)
+    unsigned char bit = 0;
+    unsigned int ratio = 36000, t = *dat;
+    for (unsigned char i = 0; i < 6; i++)
     {
         bit = t / ratio;
         lcd_write(1, bit + 0x30);
