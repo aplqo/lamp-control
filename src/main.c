@@ -527,30 +527,31 @@ ISR(USART1_RX_vect)
 ISR(INT0_vect)
 {
     ~lamp.Light;
-    unsigned char expect = (lamp.Light) & (lamp.Switch);
-    asm("sbi PINF,PINF0");
-    if (expect != lamp.On)
+    if ((lamp.Light && lamp.Switch) ^ lamp.On)
     {
         TCCR4B = t4_clock;
+        asm("sbi PORTF,PORTF0");
     }
     else
     {
         TCCR4B = 0x00;
+        asm("cbi PORTF,PORTF0");
     }
 }
 ISR(INT1_vect)
 {
     ~lamp.Switch;
-    asm("sbi PINF,PINF0");
     if (!(flag & 0x01))
         goto t;
-    if ((lamp.Light) & (lamp.Switch) != lamp.On)
+    if ((lamp.Light && lamp.Switch) ^ lamp.On)
     {
         TCCR4B = t4_clock;
+        asm("sbi PORTF,PORTF0");
     }
     else
     {
         TCCR4B = 0x00;
+        asm("cbi PORTF,PORTF0");
     }
 t:;
     if (lamp.Switch)
@@ -563,6 +564,29 @@ t:;
     }
     TCNT0 = 0x00;
     flag |= 0x40;
+}
+ISR(INT3_vect)
+{
+    ~lamp.On;
+    unsigned char expect;
+    if (flag & 0x01)
+    {
+        expect = lamp.Light & lamp.On;
+    }
+    else
+    {
+        expect = (flag1 & 0x01) ? 0xff : 0x00;
+    }
+    if (expect ^ lamp.On)
+    {
+        asm("sbi PORTF,PORTF0");
+        TCCR4B = t4_clock;
+    }
+    else
+    {
+        asm("cbi PORTF,PORTF0");
+        TCCR4B = 0x00;
+    }
 }
 /*---main---*/
 int main(void)
