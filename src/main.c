@@ -71,12 +71,6 @@ inline void board_init()
             ;
         CLKSEL0 = 0x05;
     }
-    //read from eeprom
-    {
-        EEARL = 0x00;
-        EECR = 0x01;
-        start = EEDR;
-    }
     //init gpio
     {
         DDRB = 0xff;
@@ -84,6 +78,34 @@ inline void board_init()
         DDRD = 0x00;
         DDRF = 0xf3;
         //PD pull up?
+    }
+    //init lcd1602
+    lcd_write(0, 0x01); //clear
+    lcd_write(0, 0x06); //left
+    lcd_write(0, 0x0c); //display on
+    lcd_write(0, 0x18); //2 row,8 bit bus,5x8
+    //power save
+    PRR0 = 0x85;
+    PRR1 = 0x80;
+}
+void main_init()
+{
+    //read from eeprom
+    {
+        EEARL = 0x00;
+        EECR = 0x01;
+        start = EEDR;
+    }
+    //init usart
+    {
+        UCSR1C = 0x01;
+        UCSR1B = 0x80;
+        //Band Rate?
+    }
+    //init interrupt
+    {
+        EICRA = 0x45;
+        EIMSK = 0x0b;
     }
     //init timer
     {
@@ -100,28 +122,10 @@ inline void board_init()
         OCR4C = 125;
         TIMSK4 = 0x01;
     }
-    //init usart
-    {
-        UCSR1C = 0x01;
-        UCSR1B = 0x80;
-        //Band Rate?
-    }
-    //init lcd1602
-    lcd_write(0, 0x01); //clear
-    lcd_write(0, 0x06); //left
-    lcd_write(0, 0x0c); //display on
-    lcd_write(0, 0x18); //2 row,8 bit bus,5x8
-    //init interrupt
-    {
-        EICRA = 0x45;
-        EIMSK = 0x0b;
-    }
-    PRR0 = 0x85;
-    PRR1 = 0x80;
-    asm("sei");
     //check the lamp
     {
     }
+    asm("sei");
 }
 /*---ir control---*/
 inline void ir_ctrl()
@@ -523,6 +527,8 @@ int main(void)
     /* Insert system clock initialization code here (sysclk_init()). */
 
     board_init();
+
+    main_init();
 
     /* Insert application code here, after the board has been initialized. */
     while (1)
