@@ -53,6 +53,12 @@ struct
     unsigned int ratio;
     unsigned int* tar;
 } set;
+volatile struct
+{
+    unsigned char Switch;
+    unsigned char Light;
+    unsigned char On; // if lamp is on
+} lamp;
 unsigned char mode;
 unsigned char start;
 volatile unsigned char flag = 0x01, tmp; //{rx,update,t1mod,t3mod,t1_bell,t3_bell,change,auto}
@@ -520,6 +526,18 @@ ISR(USART1_RX_vect)
 }
 ISR(INT0_vect)
 {
+    ~lamp.Light;
+    unsigned char expect = (lamp.Light) & (lamp.Switch);
+    if (expect != lamp.On)
+    {
+        asm("sbi PORTF,PORTF0");
+        TCCR4B = t4_clock;
+    }
+    else
+    {
+        asm("cbi PORTF,PORTF0");
+        TCCR4B = 0x00;
+    }
 }
 /*---main---*/
 int main(void)
