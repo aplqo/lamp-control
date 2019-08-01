@@ -399,32 +399,32 @@ inline void refresh()
     switch (mode)
     {
     case WORK1:
-        display_time(0x05, &thi_lst);
+        display_time(0x05, thi_lst);
         if (PIND & 0x02)
         {
-            display_time(0x45, &stu);
+            display_time(0x45, stu);
         }
         else
         {
-            display_time(0x45, &sto);
+            display_time(0x45, sto);
         }
         break;
     case WORK2:
-        display_time(0x05, &stu_time);
+        display_time(0x05, stu_time);
         {
             double rat = (double)stu_time / (double)total;
-            display_double(0x46, &rat);
+            display_double(0x46, rat);
         }
         break;
     case WORK3:
-        display_time(0x05, &sto_time);
-        display_time(0x45, &total);
+        display_time(0x05, sto_time);
+        display_time(0x45, total);
         break;
     case TC1:
-        display_time(0x45, &t1_time);
+        display_time(0x45, t1_time);
         break;
     case TC3:
-        display_time(0x45, &t3_time);
+        display_time(0x45, t3_time);
         break;
     default:
         break;
@@ -528,16 +528,41 @@ ISR(INT0_vect)
 {
     ~lamp.Light;
     unsigned char expect = (lamp.Light) & (lamp.Switch);
+    asm("sbi PINF,PINF0");
     if (expect != lamp.On)
     {
-        asm("sbi PORTF,PORTF0");
         TCCR4B = t4_clock;
     }
     else
     {
-        asm("cbi PORTF,PORTF0");
         TCCR4B = 0x00;
     }
+}
+ISR(INT1_vect)
+{
+    ~lamp.Switch;
+    asm("sbi PINF,PINF0");
+    if (!(flag & 0x01))
+        goto t;
+    if ((lamp.Light) & (lamp.Switch) != lamp.On)
+    {
+        TCCR4B = t4_clock;
+    }
+    else
+    {
+        TCCR4B = 0x00;
+    }
+t:;
+    if (lamp.Switch)
+    {
+        thi = &stu_time;
+    }
+    else
+    {
+        thi = &sto_time;
+    }
+    TCNT0 = 0x00;
+    flag |= 0x40;
 }
 /*---main---*/
 int main(void)
