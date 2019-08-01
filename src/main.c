@@ -130,6 +130,14 @@ void main_init()
     }
     //check the lamp
     {
+        lamp.Light = (PIND & 0x01) ? 0xff : 0x00;
+        lamp.On = (PIND & 0x08) ? 0xff : 0x00;
+        lamp.Switch = (PIND & 0x02) ? 0xff : 0x00;
+        if ((lamp.Light & lamp.Switch) ^ lamp.On)
+        {
+            asm("sbi PORTF,PORTF0");
+            TCCR4B = t4_clock;
+        }
     }
     asm("sei");
 }
