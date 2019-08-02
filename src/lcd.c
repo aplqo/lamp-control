@@ -66,7 +66,7 @@ void display_double(unsigned char pos, double dat)
     {
         bit = j % 10;
         lcd_write(1, bit + 0x30);
-        if (i == 4)
+        if (i == 3)
         {
             lcd_write(1, '.');
         }
