@@ -187,6 +187,7 @@ inline void ir_ctrl()
             mode = tmp;
             break;
         default:
+            flag1 |= 0x02;
             TCCR0B = tim_clock;
             break;
         }
@@ -203,6 +204,7 @@ inline void ir_ctrl()
         case BELL:
             break;
         default:
+            flag1 &= 0xfd;
             TCCR0B = 0x00;
             break;
         }
@@ -562,16 +564,21 @@ ISR(INT1_vect)
         asm("cbi PORTF,PORTF0");
     }
 t:;
-    if (lamp.Switch)
+    if (flag1 & 0x02)
     {
-        thi = &stu_time;
+        if (lamp.Switch)
+        {
+            thi = &stu_time;
+            thi_lst = stu;
+        }
+        else
+        {
+            thi = &sto_time;
+            thi_lst = sto;
+        }
+        TCNT0 = 0x00;
+        flag |= 0x40;
     }
-    else
-    {
-        thi = &sto_time;
-    }
-    TCNT0 = 0x00;
-    flag |= 0x40;
 }
 ISR(INT3_vect)
 {
