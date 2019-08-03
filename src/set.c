@@ -44,6 +44,20 @@ void load(unsigned char pos, unsigned int* i, enum type typ)
     lcd_write(0, 0x0e); // cursor on
 }
 
+void set_val(unsigned char val)
+{
+    if (val > set.bit)
+    {
+        *(set.target) += set.ratio * (val - set.bit);
+    }
+    else
+    {
+        *(set.target) -= set.ratio * (set.bit - val);
+    }
+    set.bit=val;
+    update();
+}
+
 void add()
 {
     if (set.bit == 9)

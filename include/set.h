@@ -8,6 +8,8 @@ enum type
 };
 
 void load(unsigned char pos, unsigned int* i, enum type typ);
+void set_val(unsigned char val);
+
 void add();
 void dec();
 
