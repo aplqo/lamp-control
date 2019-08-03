@@ -15,6 +15,7 @@ PF6: lcd1602 RS
 PF7: lcd1602 RW
 */
 #include "lcd.h"
+#include "set.h"
 #include "var.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
@@ -207,34 +208,12 @@ inline void ir_ctrl()
     case UP:
         if (mode < SET1)
             break;
-        if (set.bi < 9)
-        {
-            set.bi++;
-            *(set.tar) = *(set.tar) + set.ratio;
-        }
-        else
-        {
-            set.bi = 0;
-            *(set.tar) = *(set.tar) - set.ratio * 9;
-        }
-        lcd_write(1, set.bi);
-        lcd_write(0, 0x10); //cursor left
+        add();
         break;
     case DOWN:
         if (mode < SET1)
             break;
-        if (set.bi == 0)
-        {
-            set.bi = 9;
-            *(set.tar) = *(set.tar) + set.ratio * 9;
-        }
-        else
-        {
-            set.bi--;
-            *(set.tar) = *(set.tar) - set.ratio;
-        }
-        lcd_write(1, set.bi);
-        lcd_write(0, 0x10); //cursor left
+        dec();
         break;
     case SWITCH:
         if (flag & 0xfe)
@@ -279,34 +258,10 @@ inline void ir_ctrl()
         }
         break;
     case LEFT:
-        if (set.dig == 8)
-            break;
-        if (set.dig % 2)
-        {
-            set.ratio *= 10;
-            lcd_write(0, 0x10);
-        }
-        else
-        {
-            set.ratio *= 6;
-        }
-        set.dig++;
-        lcd_write(0, 0x10);
+        next_time();
         break;
     case RIGHT:
-        if (set.dig == 0)
-            break;
-        if (set.dig % 2)
-        {
-            set.ratio /= 6;
-        }
-        else
-        {
-            set.ratio /= 10;
-            lcd_write(0, 0x14);
-        }
-        set.dig++;
-        lcd_write(0, 0x14); //cursor right
+        prev_time();
         break;
     case AUTO:
         flag = flag ^ 0x01;
@@ -347,23 +302,24 @@ inline void change()
 {
     lcd_write(0, 0x01);
     lcd_write(0, 0x0c); //disable cursor
+    unsigned int* i;
     switch (mode)
     {
     case TC1:
         display_str(0x00, 7, "Timer1:");
-        set.tar = &t1_time;
+        i = &t1_time;
         break;
     case TC3:
         display_str(0x00, 7, "Timer3:");
-        set.tar = &t3_time;
+        i = &t3_time;
         break;
     case SET1:
         display_str(0x00, 14, "Set work time:");
-        set.tar = &stu;
+        i = &stu;
         break;
     case SET2:
         display_str(0x00, 14, "Set rest time:");
-        set.tar = &sto;
+        i = &sto;
         break;
     case WORK1:
         display_str(0x00, 3, "Rem");
@@ -383,17 +339,13 @@ inline void change()
     }
     if (mode > WORK3)
     {
-        lcd_write(0, 0x0e); //open cursor
-        set.bi = *(set.tar) % 10;
-        set.dig = 1;
-        set.ratio = 1;
         if (mode > SET2)
         {
-            lcd_write(0, (0x80 | 0x0f));
+            load(0x0f, i, TIME);
         }
         else
         {
-            lcd_write(0, (0x80 | 0x4f));
+            load(0x4f, i, TIME);
         }
     }
 }
