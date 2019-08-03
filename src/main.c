@@ -81,6 +81,12 @@ inline void board_init()
         DDRF = 0xf3;
         //PD pull up?
     }
+    //init usart
+    {
+        UCSR1C = 0x01;
+        UCSR1B = 0x80;
+        //Band Rate?
+    }
     //init lcd1602
     lcd_write(0, 0x01); //clear
     lcd_write(0, 0x06); //left
@@ -97,12 +103,6 @@ void main_init()
         EEARL = 0x00;
         EECR = 0x01;
         start = EEDR;
-    }
-    //init usart
-    {
-        UCSR1C = 0x01;
-        UCSR1B = 0x80;
-        //Band Rate?
     }
     //init interrupt
     {
