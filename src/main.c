@@ -15,19 +15,13 @@ PF6: lcd1602 RS
 PF7: lcd1602 RW
 */
 #include "ir.h"
+#include "lamp.h"
 #include "lcd.h"
 #include "set.h"
 #include "timer.h"
 #include "var.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#define t4_clock 0x80
-volatile struct
-{
-    unsigned char Switch;
-    unsigned char Light;
-    unsigned char On; // if lamp is on
-} lamp;
 /*-------function-------*/
 /*---init---*/
 inline void board_init()
@@ -142,85 +136,7 @@ inline void ir_ctrl()
             flag |= 0x02;
             mode = tmp;
             break;
-        default:
-            flag1 |= 0x02;
-            TCCR0B = tim_clock;
-            break;
         }
-        break;
-    case PAUSE:
-        switch (mode)
-        {
-        case BELL:
-            break;
-        default:
-            flag1 &= 0xfd;
-            TCCR0B = 0x00;
-            break;
-        }
-        break;
-    case SWITCH:
-        if (flag & 0xfe)
-        {
-            flag1 = flag1 ^ 0x01;
-            if (PORTD & (flag1 & 0x01))
-            {
-                asm("sbi PORTF,PORTF0");
-                TCCR4B = t4_clock;
-            }
-            else
-            {
-                asm("cbi  PORTF,PORTF0");
-                TCCR4B = 0x00;
-                TC4H = 0;
-                TCNT4 = 0;
-            }
-        }
-        break;
-    case STOP:
-        switch (mode)
-        {
-        case BELL:
-            break;
-        default:
-            TCCR0B = 0x00;
-            stu_time = 0;
-            sto_time = 0;
-            total = 0;
-            flag1 &= 0xfd;
-            break;
-        }
-        break;
-    case AUTO:
-        flag = flag ^ 0x01;
-        if (flag & 0x01)
-        {
-            asm("cbi PORTC,PORTC7");
-            asm("sbi EIMSK,INT0");
-        }
-        else
-        {
-            asm("sbi PORTC,PORTC7");
-            asm("cbi EIMSK,INT0");
-        }
-        break;
-    case NEXT:
-        if (PINB & 0x02)
-        {
-            thi_lst += stu;
-        }
-        else
-        {
-            thi_lst += sto;
-        }
-        flag1 &= 0xfb;
-        if (!(flag & 0x0c))
-        {
-            asm("cbi PORTF,PORTF4");
-        }
-        TCCR0B = 0x01;
-        break;
-    default:
         break;
     }
     flag &= 0x7f;
@@ -358,75 +274,7 @@ ISR(TIMER4_OVF_vect)
         asm("sbi PINF,PINF0");
     }
 }
-ISR(INT0_vect)
-{
-    ~lamp.Light;
-    if ((lamp.Light && lamp.Switch) ^ lamp.On)
-    {
-        TCCR4B = t4_clock;
-        asm("sbi PORTF,PORTF0");
-    }
-    else
-    {
-        TCCR4B = 0x00;
-        asm("cbi PORTF,PORTF0");
-    }
-}
-ISR(INT1_vect)
-{
-    ~lamp.Switch;
-    if (!(flag & 0x01))
-        goto t;
-    if ((lamp.Light && lamp.Switch) ^ lamp.On)
-    {
-        TCCR4B = t4_clock;
-        asm("sbi PORTF,PORTF0");
-    }
-    else
-    {
-        TCCR4B = 0x00;
-        asm("cbi PORTF,PORTF0");
-    }
-t:;
-    if (flag1 & 0x02)
-    {
-        if (lamp.Switch)
-        {
-            thi = &stu_time;
-            thi_lst = stu;
-        }
-        else
-        {
-            thi = &sto_time;
-            thi_lst = sto;
-        }
-        TCNT0 = 0x00;
-        flag |= 0x40;
-    }
-}
-ISR(INT3_vect)
-{
-    ~lamp.On;
-    unsigned char expect;
-    if (flag & 0x01)
-    {
-        expect = lamp.Light & lamp.On;
-    }
-    else
-    {
-        expect = (flag1 & 0x01) ? 0xff : 0x00;
-    }
-    if (expect ^ lamp.On)
-    {
-        asm("sbi PORTF,PORTF0");
-        TCCR4B = t4_clock;
-    }
-    else
-    {
-        asm("cbi PORTF,PORTF0");
-        TCCR4B = 0x00;
-    }
-}
+
 /*---main---*/
 int main(void)
 {
