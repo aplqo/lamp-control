@@ -17,22 +17,11 @@ PF7: lcd1602 RW
 #include "ir.h"
 #include "lcd.h"
 #include "set.h"
+#include "timer.h"
 #include "var.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#define tim_clock 0x05
 #define t4_clock 0x80
-enum mod
-{
-    BELL = 0,
-    WORK1 = 1, //show work time page 1
-    WORK2 = 2, //show work time page 2
-    WORK3 = 3,
-    SET1 = 4,
-    SET2 = 5, //set work time
-    TC1 = 6, //timer
-    TC3 = 7
-};
 struct
 {
     unsigned char bi;
@@ -46,7 +35,6 @@ volatile struct
     unsigned char Light;
     unsigned char On; // if lamp is on
 } lamp;
-unsigned char mode;
 /*-------function-------*/
 /*---init---*/
 inline void board_init()
@@ -154,12 +142,6 @@ inline void ir_ctrl()
     case START:
         switch (mode)
         {
-        case TC1:
-            TCCR1B = tim_clock;
-            break;
-        case TC3:
-            TCCR3B = tim_clock;
-            break;
         case BELL:
             flag &= 0xf3;
             flag1 &= 0xfb;
@@ -176,12 +158,6 @@ inline void ir_ctrl()
     case PAUSE:
         switch (mode)
         {
-        case TC1:
-            TCCR1B = 0x00;
-            break;
-        case TC3:
-            TCCR3B = 0x00;
-            break;
         case BELL:
             break;
         default:
@@ -211,16 +187,6 @@ inline void ir_ctrl()
     case STOP:
         switch (mode)
         {
-        case TC1:
-            TCCR1B = 0x00;
-            t1_time = 0;
-            TCNT1 = 0;
-            break;
-        case TC3:
-            TCCR3B = 0x00;
-            t3_time = 0;
-            TCNT3 = 0;
-            break;
         case BELL:
             break;
         default:
@@ -387,52 +353,6 @@ ISR(TIMER0_COMPB_vect)
     {
         asm("sbi PINF,PINF4");
         i = 0;
-    }
-}
-ISR(TIMER1_OVF_vect)
-{
-    if (flag & 0x02)
-    {
-        t1_time--;
-        if (t1_time == 0)
-        {
-            flag |= 0x4a;
-            tmp = mode;
-            mode = BELL;
-            asm("sbi PORTF,PORTF4");
-            return;
-        }
-    }
-    else
-    {
-        t1_time++;
-    }
-    if (mode == TC1)
-    {
-        flag |= 0x40;
-    }
-}
-ISR(TIMER3_OVF_vect)
-{
-    if (flag & 0x01)
-    {
-        t3_time--;
-        if (t3_time == 0)
-        {
-            flag |= 0x46;
-            tmp = mode;
-            mode = BELL;
-            asm("sbi PORTF,PORTF4");
-            return;
-        }
-    }
-    else
-    {
-        t3_time++;
-    }
-    if (mode == TC3)
-    {
-        flag |= 0x40;
     }
 }
 ISR(TIMER4_OVF_vect)
