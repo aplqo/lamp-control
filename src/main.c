@@ -14,6 +14,7 @@ PF5: lcd1602 E
 PF6: lcd1602 RS
 PF7: lcd1602 RW
 */
+#include "ir.h"
 #include "lcd.h"
 #include "set.h"
 #include "var.h"
@@ -32,22 +33,6 @@ enum mod
     TC1 = 6, //timer
     TC3 = 7
 };
-volatile enum {
-    POWER,
-    PAGEUP,
-    PAGEDW,
-    START,
-    PAUSE,
-    UP,
-    DOWN,
-    SWITCH,
-    STOP,
-    LEFT,
-    RIGHT,
-    NUL,
-    AUTO,
-    NEXT
-} ir;
 struct
 {
     unsigned char bi;
@@ -205,16 +190,6 @@ inline void ir_ctrl()
             break;
         }
         break;
-    case UP:
-        if (mode < SET1)
-            break;
-        add();
-        break;
-    case DOWN:
-        if (mode < SET1)
-            break;
-        dec();
-        break;
     case SWITCH:
         if (flag & 0xfe)
         {
@@ -257,12 +232,6 @@ inline void ir_ctrl()
             break;
         }
         break;
-    case LEFT:
-        next();
-        break;
-    case RIGHT:
-        prev();
-        break;
     case AUTO:
         flag = flag ^ 0x01;
         if (flag & 0x01)
@@ -295,7 +264,7 @@ inline void ir_ctrl()
     default:
         break;
     }
-    ir = NUL;
+    flag &= 0x7f;
 }
 /*---update display---*/
 inline void change()
@@ -476,11 +445,6 @@ ISR(TIMER4_OVF_vect)
         asm("sbi PINF,PINF0");
     }
 }
-ISR(USART1_RX_vect)
-{
-    ir = UDR1;
-    flag |= 0x80;
-}
 ISR(INT0_vect)
 {
     ~lamp.Light;
@@ -562,7 +526,7 @@ int main(void)
     /* Insert application code here, after the board has been initialized. */
     while (1)
     {
-        if (ir != NUL)
+        if (flag & 0x80)
         {
             ir_ctrl();
         }
