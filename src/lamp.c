@@ -161,3 +161,33 @@ ISR(INT3_vect)
         TCCR4B = 0x00;
     }
 }
+ISR(TIMER0_OVF_vect)
+{
+    static unsigned char i = 0;
+    i++;
+    if (i == 125)
+    {
+        i = 0;
+        (*thi)++;
+        total++;
+        if (thi_lst == 0)
+        {
+            flag1 |= 0x04;
+            TCCR0B = 0x05;
+        }
+        else
+        {
+            thi_lst--;
+        }
+    }
+}
+ISR(TIMER4_OVF_vect)
+{
+    static unsigned char i = 0;
+    i++;
+    if (i > start)
+    {
+        i = 0;
+        asm("sbi PINF,PINF0");
+    }
+}

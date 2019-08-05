@@ -234,26 +234,6 @@ inline void refresh()
     lcd_write(0, 0x0e);
 }
 /*---interrupt---*/
-ISR(TIMER0_OVF_vect)
-{
-    static unsigned char i = 0;
-    i++;
-    if (i == 125)
-    {
-        i = 0;
-        (*thi)++;
-        total++;
-        if (thi_lst == 0)
-        {
-            flag1 |= 0x04;
-            TCCR0B = 0x05;
-        }
-        else
-        {
-            thi_lst--;
-        }
-    }
-}
 ISR(TIMER0_COMPB_vect)
 {
     static unsigned char i = 0;
@@ -262,16 +242,6 @@ ISR(TIMER0_COMPB_vect)
     {
         asm("sbi PINF,PINF4");
         i = 0;
-    }
-}
-ISR(TIMER4_OVF_vect)
-{
-    static unsigned char i = 0;
-    i++;
-    if (i > start)
-    {
-        i = 0;
-        asm("sbi PINF,PINF0");
     }
 }
 
