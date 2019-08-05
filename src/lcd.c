@@ -82,3 +82,16 @@ void display_str(unsigned char pos, unsigned char length, const char* str)
         lcd_write(1, str[i]);
     }
 }
+void display_uint(unsigned char pos, unsigned int ui)
+{
+    lcd_write(0, 0x80 | (pos + 4));
+    lcd_write(0, 0x06);
+    unsigned char bit;
+    for (unsigned char i = 0; i < 5; i++)
+    {
+        bit = pos % 10;
+        lcd_write(1, bit + 0x30);
+        pos /= 10;
+    }
+    lcd_write(0, 0x06);
+}
