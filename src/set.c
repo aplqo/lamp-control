@@ -5,6 +5,16 @@ enum type
     TIME = 0,
     INT = 1
 };
+struct typeConf
+{
+    unsigned char digit;
+    unsigned char skip;
+    unsigned char ratio[2];
+};
+const struct typeConf config[2] = {
+    { 4, 3, { 10, 10 } },
+    { 5, 1, { 6, 10 } }
+};
 
 struct
 {
@@ -13,8 +23,7 @@ struct
     unsigned int ratio;
     unsigned int* target;
 
-    unsigned char pos;
-    enum type t;
+    const struct typeConf* conf;
 } set;
 
 void update()
@@ -24,8 +33,7 @@ void update()
 }
 void load(unsigned char pos, unsigned int* i, enum type typ)
 {
-    set.t = typ;
-    set.pos = pos;
+    set.conf = config + typ;
     set.digit = 0;
     set.target = i;
     set.ratio = 1;
@@ -54,7 +62,7 @@ void set_val(unsigned char val)
     {
         *(set.target) -= set.ratio * (set.bit - val);
     }
-    set.bit=val;
+    set.bit = val;
     update();
 }
 
@@ -77,50 +85,29 @@ void dec()
     update();
 }
 
-void next_int()
+void next()
 {
-    if (set.digit == 4)
+    if (set.digit == (set.conf->digit))
         return;
+    unsigned char i = set.digit % 2;
     set.digit++;
-    set.ratio *= 10;
-    lcd_write(0, 0x10);
-}
-void prev_int()
-{
-    if (set.digit == 0)
-        return;
-    set.digit--;
-    set.ratio *= 10;
-    lcd_write(0, 0x14);
-}
-
-void next_time()
-{
-    if (set.digit == 5)
-        return;
-    set.digit++;
-    if (set.digit % 2)
+    set.ratio *= (set.conf)->ratio[i];
+    if (i == (set.conf)->skip)
     {
-        set.ratio *= 10;
-    }
-    else
-    {
-        set.ratio *= 6;
+        lcd_write(0, 0x10);
     }
     lcd_write(0, 0x10);
 }
-void prev_time()
+void prev()
 {
     if (set.digit == 0)
         return;
+    unsigned char i = set.digit % 2;
     set.digit--;
-    if (set.digit % 2)
+    set.ratio /= (set.conf)->ratio[1 - i];
+    if (i == ((set.conf)->skip) - 1)
     {
-        set.ratio /= 6;
-    }
-    else
-    {
-        set.ratio /= 10;
+        lcd_write(0, 0x14);
     }
     lcd_write(0, 0x14);
 }

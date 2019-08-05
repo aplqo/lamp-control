@@ -258,10 +258,10 @@ inline void ir_ctrl()
         }
         break;
     case LEFT:
-        next_time();
+        next();
         break;
     case RIGHT:
-        prev_time();
+        prev();
         break;
     case AUTO:
         flag = flag ^ 0x01;
