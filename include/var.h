@@ -3,7 +3,7 @@
 
 #define tim_clock 0x05
 
-extern unsigned char start;
+extern unsigned int start;
 extern volatile unsigned char flag = 0x01, tmp; //{rx,update,t1mod,t3mod,t1_bell,t3_bell,change,auto}
 extern volatile unsigned char flag1 = 0; //{*,*,*,*,*,t0_bell,t0,lamp}
 extern unsigned char* thi;

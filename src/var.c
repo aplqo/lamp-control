@@ -1,4 +1,4 @@
-unsigned char start;
+unsigned int start;
 volatile unsigned char flag = 0x01, tmp; //{rx,update,t1mod,t3mod,t1_bell,t3_bell,change,auto}
 volatile unsigned char flag1 = 0; //{*,*,*,*,*,t0_bell,t0,lamp}
 unsigned char* thi;

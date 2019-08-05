@@ -19,6 +19,7 @@ PF7: lcd1602 RW
 #include "mode.h"
 #include "timer.h"
 #include "var.h"
+#include <avr/eeprom.h>
 #include <avr/io.h>
 /*-------function-------*/
 /*---init---*/
@@ -59,11 +60,7 @@ inline void board_init()
 void main_init()
 {
     //read from eeprom
-    {
-        EEARL = 0x00;
-        EECR = 0x01;
-        start = EEDR;
-    }
+    start = eeprom_read_word((uint16_t*)0x00);
     //init interrupt
     {
         EICRA = 0x45;
