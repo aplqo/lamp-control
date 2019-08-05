@@ -36,8 +36,10 @@ inline void board_init()
         DDRB = 0xff;
         DDRC = 0x80;
         DDRD = 0x00;
+        DDRE = 0x00;
         DDRF = 0xf3;
-        //PD pull up?
+        PORTD = 0x0f;
+        PORTE = 0x40;
     }
     //init usart
     {
