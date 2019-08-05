@@ -22,13 +22,6 @@ PF7: lcd1602 RW
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #define t4_clock 0x80
-struct
-{
-    unsigned char bi;
-    unsigned char dig;
-    unsigned int ratio;
-    unsigned int* tar;
-} set;
 volatile struct
 {
     unsigned char Switch;
