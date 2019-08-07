@@ -12,7 +12,7 @@ struct status
 };
 volatile struct status lamp;
 
-void ir_lamp()
+void ir_lampt()
 {
     switch (ir)
     {
@@ -31,6 +31,24 @@ void ir_lamp()
         total = 0;
         flag1 &= 0xfd;
         break;
+    default:
+        if (mode > WORK3)
+        {
+            ir_set();
+        }
+        else
+        {
+            return;
+        }
+        break;
+    }
+    flag &= 0x7f;
+}
+
+void ir_lamp()
+{
+    switch (ir)
+    {
     case AUTO:
         flag = flag ^ 0x01;
         if (flag & 0x01)
@@ -79,14 +97,6 @@ void ir_lamp()
         }
         break;
     default:
-        if (mode > WORK3)
-        {
-            ir_set();
-        }
-        else
-        {
-            return;
-        }
         break;
     }
     flag &= 0x7f;

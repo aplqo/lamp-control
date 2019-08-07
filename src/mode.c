@@ -102,6 +102,7 @@ void ir_bell()
 void ir_ctrl()
 {
     ir_mode();
+    ir_lamp();
     if (flag & 0x80)
     {
         switch (mode)
@@ -116,7 +117,7 @@ void ir_ctrl()
             ir_tc3();
             break;
         default:
-            ir_lamp();
+            ir_lampt();
             break;
         }
     }
