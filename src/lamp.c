@@ -104,7 +104,7 @@ void ir_lamp()
 
 ISR(INT0_vect)
 {
-    ~lamp.Light;
+    lamp.Light = (~lamp.Light);
     if ((lamp.Light && lamp.Switch) ^ lamp.On)
     {
         TCCR4B = t4_clock;
@@ -118,7 +118,7 @@ ISR(INT0_vect)
 }
 ISR(INT1_vect)
 {
-    ~lamp.Switch;
+    lamp.Switch = (~lamp.Switch);
     if (!(flag & 0x01))
         goto t;
     if ((lamp.Light && lamp.Switch) ^ lamp.On)
@@ -150,7 +150,7 @@ t:;
 }
 ISR(INT3_vect)
 {
-    ~lamp.On;
+    lamp.On = (~lamp.On);
     unsigned char expect;
     if (flag & 0x01)
     {
