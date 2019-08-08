@@ -7,7 +7,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-inline void change()
+void change()
 {
     lcd_write(0, 0x01);
     lcd_write(0, 0x0c); //disable cursor

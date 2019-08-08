@@ -144,6 +144,7 @@ int main(void)
     board_init();
 
     main_init();
+    change(); //init mode
 
     /* Insert application code here, after the board has been initialized. */
     while (1)
