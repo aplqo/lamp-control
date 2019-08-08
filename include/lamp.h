@@ -11,6 +11,6 @@ struct status
 extern volatile struct status lamp;
 
 void ir_lamp();
-void ir_lampt()
+void ir_lampt();
 
 #endif

@@ -16,4 +16,4 @@ enum mod
     TC1 = 6, //timer
     TC3 = 7
 };
-unsigned char mode;
+unsigned char mode = WORK1;
