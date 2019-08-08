@@ -88,7 +88,8 @@ void main_init()
         lamp.Switch = (PIND & 0x02) ? 0xff : 0x00;
         if ((lamp.Light & lamp.Switch) ^ lamp.On)
         {
-            asm("sbi PORTF,PORTF0");
+            asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+                :);
             TCCR4B = t4_clock;
         }
     }

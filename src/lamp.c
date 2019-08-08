@@ -53,13 +53,17 @@ void ir_lamp()
         flag = flag ^ 0x01;
         if (flag & 0x01)
         {
-            asm("cbi PORTC,PORTC7");
-            asm("sbi EIMSK,INT0");
+            asm("cbi %0,0x07;" ::"i"(_SFR_IO_ADDR(PORTC))
+                :);
+            asm("sbi %0,0x00;" ::"i"(_SFR_IO_ADDR(EIMSK))
+                :);
         }
         else
         {
-            asm("sbi PORTC,PORTC7");
-            asm("cbi EIMSK,INT0");
+            asm("sbi %0,0x07" ::"i"(_SFR_IO_ADDR(PORTC))
+                :);
+            asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(EIMSK))
+                :);
         }
         break;
     case NEXT:
@@ -74,7 +78,8 @@ void ir_lamp()
         flag1 &= 0xfb;
         if (!(flag & 0x0c))
         {
-            asm("cbi PORTF,PORTF4");
+            asm("cbi %0,0x04" ::"i"(_SFR_IO_ADDR(PORTF))
+                :);
         }
         TCCR0B = 0x01;
         break;
@@ -84,12 +89,14 @@ void ir_lamp()
             flag1 = flag1 ^ 0x01;
             if (lamp.On & (flag1 & 0x01))
             {
-                asm("sbi PORTF,PORTF0");
+                asm("sbi %0,0x00" ::"I"(_SFR_IO_ADDR(PORTF))
+                    :);
                 TCCR4B = t4_clock;
             }
             else
             {
-                asm("cbi  PORTF,PORTF0");
+                asm("cbi  %0,0x00" ::"I"(_SFR_IO_ADDR(PORTF))
+                    :);
                 TCCR4B = 0x00;
                 TC4H = 0;
                 TCNT4 = 0;
@@ -108,12 +115,14 @@ ISR(INT0_vect)
     if ((lamp.Light && lamp.Switch) ^ lamp.On)
     {
         TCCR4B = t4_clock;
-        asm("sbi PORTF,PORTF0");
+        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
     }
     else
     {
         TCCR4B = 0x00;
-        asm("cbi PORTF,PORTF0");
+        asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
     }
 }
 ISR(INT1_vect)
@@ -124,12 +133,14 @@ ISR(INT1_vect)
     if ((lamp.Light && lamp.Switch) ^ lamp.On)
     {
         TCCR4B = t4_clock;
-        asm("sbi PORTF,PORTF0");
+        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
     }
     else
     {
         TCCR4B = 0x00;
-        asm("cbi PORTF,PORTF0");
+        asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
     }
 t:;
     if (flag1 & 0x02)
@@ -162,12 +173,14 @@ ISR(INT3_vect)
     }
     if (expect ^ lamp.On)
     {
-        asm("sbi PORTF,PORTF0");
+        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
         TCCR4B = t4_clock;
     }
     else
     {
-        asm("cbi PORTF,PORTF0");
+        asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
         TCCR4B = 0x00;
     }
 }
@@ -198,6 +211,7 @@ ISR(TIMER4_OVF_vect)
     if (i > start)
     {
         i = 0;
-        asm("sbi PINF,PINF0");
+        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PINF))
+            :);
     }
 }

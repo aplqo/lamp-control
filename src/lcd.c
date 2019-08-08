@@ -6,12 +6,16 @@ unsigned char lcd_read()
     unsigned char dat;
     DDRB = 0x00;
     PORTB = 0xff;
-    asm("sbi PORTF,PORTF7");
+    asm("sbi %0,0x07" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     asm("nop");
-    asm("sbi PORTF,PORTF5");
+    asm("sbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     dat = PINB;
-    asm("cbi PORTF,PORTF5");
-    asm("cbi PORTF,PORTF6");
+    asm("cbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
+    asm("cbi %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     DDRB = 0xff;
     return dat;
 }
@@ -19,18 +23,23 @@ void lcd_write(unsigned char rs, unsigned char dat)
 {
     while (lcd_read() & 0x80)
         ;
-    asm("cbi PORTF,PORTF7");
+    asm("sbi %0,0x07" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     if (rs)
     {
-        asm("sbi PORTF,PORTF6");
+        asm("sbi %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
     }
     PORTB = dat;
     asm("nop");
-    asm("sbi PORTF,PORTF5");
+    asm("sbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     _delay_us(150);
-    asm("cbi PORTF,PORTF5");
+    asm("cbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     asm("nop");
-    asm("cbi PORTF,PORTF6");
+    asm("cbi %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     PORTB = 0xff;
 }
 /*---display---*/

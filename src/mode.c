@@ -64,7 +64,8 @@ void ir_mode()
     switch (ir)
     {
     case POWER:
-        asm("sbi PINF,PINF1");
+        asm("sbi %0,0x01" ::"i"(_SFR_IO_ADDR(PINF))
+            :);
         return;
     case PAGEUP:
         mode++;
@@ -95,7 +96,8 @@ void ir_bell()
         return;
     flag &= 0xf3;
     flag1 &= 0xfb;
-    asm("cbi PORTF,PORTF4");
+    asm("cbi %0,0x04" ::"i"(_SFR_IO_ADDR(PORTF))
+        :);
     flag |= 0x02;
     mode = tmp;
     flag &= 0x7f;
@@ -132,7 +134,8 @@ ISR(TIMER0_COMPB_vect)
     i++;
     if (i == 63)
     {
-        asm("sbi PINF,PINF4");
+        asm("sbi %0,0x04" ::"i"(_SFR_IO_ADDR(PINF))
+            :);
         i = 0;
     }
 }

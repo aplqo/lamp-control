@@ -29,12 +29,14 @@ void measure()
     unsigned int t[2];
     for (unsigned char i = 0; i < 2; i++)
     {
-        asm("sbi PORTF,PORTF0");
+        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
         TCCR1B = clock;
         while (TCCR1B)
             ;
         t[i] = time;
-        asm("cbi PORTF,PORTF0");
+        asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
+            :);
         _delay_ms(50);
     }
     time = (t[0] > t[1]) ? t[0] : t[1];
