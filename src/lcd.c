@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <util/delay.h>
 /*---lcd driver--- */
 unsigned char lcd_read()
 {
@@ -26,7 +27,7 @@ void lcd_write(unsigned char rs, unsigned char dat)
     PORTB = dat;
     asm("nop");
     asm("sbi PORTF,PORTF5");
-    delay_us(150);
+    _delay_us(150);
     asm("cbi PORTF,PORTF5");
     asm("nop");
     asm("cbi PORTF,PORTF6");
