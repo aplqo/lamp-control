@@ -83,6 +83,8 @@ void ir_mode()
         flag |= 0x02;
         lcd_write(0, 0x01);
         break;
+    default:
+        return;
     }
     change();
     flag &= 0x7f;
