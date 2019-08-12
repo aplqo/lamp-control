@@ -16,6 +16,7 @@ PF7: lcd1602 RW
 */
 #include "lamp.h"
 #include "lcd.h"
+#include "measure.h"
 #include "mode.h"
 #include "timer.h"
 #include "var.h"
@@ -143,6 +144,10 @@ int main(void)
     /* Insert system clock initialization code here (sysclk_init()). */
 
     board_init();
+    if (PINE & 0x40)
+    {
+        measure();
+    }
 
     main_init();
     change(); //init mode

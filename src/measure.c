@@ -64,6 +64,8 @@ void measure()
     display_str(0x00, 7, "Writing");
     eeprom_write_word((uint16_t*)0x00, time);
     display_str(0x00, 11, "Press reset");
+    while (1)
+        ;
 }
 ISR(TIMER1_CAPT_vect)
 {
