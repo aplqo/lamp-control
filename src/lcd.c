@@ -1,46 +1,68 @@
 #include <avr/io.h>
 #include <util/delay.h>
+/*---io port operation---*/
+#define set "sbi"
+#define clr "sbi"
+#define en(op) asm(op " %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF)) \
+                   :)
+#define rw(op) asm(op " %0,0x07" ::"i"(_SFR_IO_ADDR(PORTF)) \
+                   :)
+#define rs(op) asm(op " %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF)) \
+                   :)
 /*---lcd driver--- */
 unsigned char lcd_read()
 {
+    en(clr);
     unsigned char dat;
     DDRB = 0x00;
     PORTB = 0xff;
-    asm("sbi %0,0x07" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
+    rw(set);
     asm("nop");
-    asm("sbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
-    dat = PINB;
-    asm("cbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
-    asm("cbi %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
+
+    en(set);
+    dat = PINB & 0xf0;
+    en(clr);
+    asm("nop");
+
+    en(set);
+    asm("nop");
+    dat |= PINB >> 4;
+    en(clr);
+
+    rs(clr);
     DDRB = 0xff;
     return dat;
+}
+void lcd_writeDirect(unsigned char rs, unsigned char dat) //write directly without wait for busy
+{
+    rw(clr);
+    if (rs)
+    {
+        rs(set);
+    }
+
+    PORTB = dat & 0xf0; // write high
+    asm("nop");
+    en(set);
+    asm("nop");
+    en(clr);
+
+    PORTB = dat << 4; //write low
+    asm("nop");
+    en(set);
+    asm("nop");
+    en(clr);
+
+    asm("nop");
+    rs(clr);
+
+    PORTB = 0xff;
 }
 void lcd_write(unsigned char rs, unsigned char dat)
 {
     while (lcd_read() & 0x80)
         ;
-    asm("sbi %0,0x07" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
-    if (rs)
-    {
-        asm("sbi %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF))
-            :);
-    }
-    PORTB = dat;
-    asm("nop");
-    asm("sbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
-    _delay_us(150);
-    asm("cbi %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
-    asm("nop");
-    asm("cbi %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
-    PORTB = 0xff;
+    lcd_writeDirect(rs, dat);
 }
 /*---display---*/
 void display_time(unsigned char pos, unsigned int dat)

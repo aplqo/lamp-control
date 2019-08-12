@@ -50,10 +50,10 @@ inline void board_init()
         //Band Rate?
     }
     //init lcd1602
-    lcd_write(0, 0x01); //clear
-    lcd_write(0, 0x06); //left
-    lcd_write(0, 0x0c); //display on
-    lcd_write(0, 0x18); //2 row,8 bit bus,5x8
+    lcd_writeDirect(0, 0x28); //2 row,4 bit bus,5x8
+    lcd_writeDirect(0, 0x01); //clear
+    lcd_writeDirect(0, 0x06); //right
+    lcd_writeDirect(0, 0x0c); //display on
     //power save
     PRR0 = 0x85;
     PRR1 = 0x80;
