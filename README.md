@@ -11,13 +11,13 @@ PB4|D8|input/output|Digital I/O|LCD1602 D4|LCD data|
 PB5|D9|input/output|Digital I/O|LCD1602 D5|LCD data|
 PB6|D10|input/output|Digital I/O|LCD1602 D6|LCD data|
 PB7|D11|input/output|Digital I/O|LCD1602 D7|LCD data|
-PC7|D13|output|Digital I/O|LED auto|LED show if lamp control is auto|LED is on board
-PD0|D3|input|INT0|light sensor|Check whether it is bright enough|Use digital light seneor
+PC7|D13|output|Digital I/O|LED auto|LED auto|LED is on board
+PD0|D3|input|INT0|light sensor|bright check|Use digital seneor
 PD1|D2|input|INT1|Human infared sensor|||
 PD2|D0|input|USART RXD|IR decoder|Receive IR code|
-PD3|D1|input|INT3|light sensor on lamp|check if lamp is on|Use digital light seneor
-PD4|D4|input|ICP1|light sensor on lamp|Measuring delay for lamp turning on|Connect to PD3
-PE6|D7|input|Digital I/O|Nothing|Mode select on boot|connect to high to enter time measure
+PD3|D1|input|INT3|light sensor on lamp|check lamp|Use digital seneor
+PD4|D4|input|ICP1|light sensor on lamp|Measuring delay|Connect to PD3
+PE6|D7|input|Digital I/O|Nothing|Mode select|
 PF0|A5|output|Digital I/O|Relay for controling lamp|||Connect NO;in:high
 PF1|A4|output|Digital I/O|Relay for power||Connect NO;in:high
 PF4|A3|output|Digital I/O|Bell||
