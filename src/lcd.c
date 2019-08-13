@@ -15,7 +15,7 @@ unsigned char lcd_read()
     en(clr);
     unsigned char dat;
     DDRB = 0x00;
-    PORTB = 0xff;
+    PORTB = 0xf0;
     rw(set);
     asm("nop");
 
@@ -30,7 +30,7 @@ unsigned char lcd_read()
     en(clr);
 
     rs(clr);
-    DDRB = 0xff;
+    DDRB = 0xf0;
     return dat;
 }
 void lcd_writeDirect(unsigned char rs, unsigned char dat) //write directly without wait for busy
@@ -56,7 +56,7 @@ void lcd_writeDirect(unsigned char rs, unsigned char dat) //write directly witho
     asm("nop");
     rs(clr);
 
-    PORTB = 0xff;
+    PORTB = 0xf0;
 }
 void lcd_write(unsigned char rs, unsigned char dat)
 {

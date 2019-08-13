@@ -35,7 +35,7 @@ inline void board_init()
     }
     //init gpio
     {
-        DDRB = 0xff;
+        DDRB = 0xf0;
         DDRC = 0x80;
         DDRD = 0x00;
         DDRE = 0x00;
