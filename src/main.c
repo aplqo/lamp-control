@@ -47,7 +47,7 @@ inline void board_init()
     {
         UCSR1C = 0x01;
         UCSR1B = 0x80;
-        //Band Rate?
+        UBRR1 = 103; // bandrate 9600
     }
     //init lcd1602
     lcd_writeDirect(0, 0x28); //2 row,4 bit bus,5x8
