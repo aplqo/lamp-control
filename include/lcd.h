@@ -3,7 +3,7 @@
 
 unsigned char lcd_read();
 void lcd_write(unsigned char rs, unsigned char dat);
-void lcd_writeDirect(unsigned char rs, unsigned char dat);
+void lcd_init();
 
 /*---display--- */
 void display_time(unsigned char pos, unsigned int dat);

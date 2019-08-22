@@ -2,7 +2,7 @@
 #include <util/delay.h>
 /*---io port operation---*/
 #define set "sbi"
-#define clr "sbi"
+#define clr "cbi"
 #define en(op) asm(op " %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF)) \
                    :)
 #define rw(op) asm(op " %0,0x07" ::"i"(_SFR_IO_ADDR(PORTF)) \
@@ -10,50 +10,57 @@
 #define rs(op) asm(op " %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF)) \
                    :)
 /*---lcd driver--- */
-unsigned char lcd_read()
+static void pulse()
 {
     en(clr);
-    unsigned char dat;
+    _delay_us(1);
+    en(set);
+    _delay_us(1);
+    en(clr);
+}
+unsigned char lcd_read()
+{
+    unsigned char dat = 0x00;
     DDRB = 0x00;
-    PORTB = 0xf0;
+    PORTB = 0x00;
     rw(set);
     asm("nop");
 
     en(set);
-    dat = PINB & 0xf0;
-    en(clr);
     asm("nop");
+    dat = PINB & 0xf0;
+    _delay_us(1);
+    en(clr);
+    _delay_us(100);
 
     en(set);
     asm("nop");
     dat |= PINB >> 4;
+    _delay_us(1);
     en(clr);
+    _delay_us(100);
 
     rs(clr);
+    rw(clr);
     DDRB = 0xf0;
     return dat;
 }
-void lcd_writeDirect(unsigned char rs, unsigned char dat) //write directly without wait for busy
+static void lcd_write4bit(unsigned char dat)
 {
-    rw(clr);
+    PORTB = dat;
+    pulse();
+    _delay_us(100);
+}
+static void lcd_writeDirect(unsigned char rs, unsigned char dat) //write directly without wait for busy
+{
     if (rs)
     {
         rs(set);
     }
 
-    PORTB = dat & 0xf0; // write high
-    asm("nop");
-    en(set);
-    asm("nop");
-    en(clr);
+    lcd_write4bit(dat & 0xf0); // write high
+    lcd_write4bit(dat << 4); //write low
 
-    PORTB = dat << 4; //write low
-    asm("nop");
-    en(set);
-    asm("nop");
-    en(clr);
-
-    asm("nop");
     rs(clr);
 
     PORTB = 0xf0;
@@ -63,6 +70,26 @@ void lcd_write(unsigned char rs, unsigned char dat)
     while (lcd_read() & 0x80)
         ;
     lcd_writeDirect(rs, dat);
+}
+void lcd_init()
+{
+    rs(clr);
+    rw(clr);
+    _delay_ms(15);
+
+    lcd_write4bit(0x30);
+    _delay_us(4500);
+
+    lcd_write4bit(0x30);
+    _delay_us(4500);
+
+    lcd_write4bit(0x30);
+    _delay_us(150);
+    lcd_write4bit(0x20);
+    lcd_writeDirect(0, 0x28);
+    lcd_write(0, 0x06); // right
+    lcd_write(0, 0x0c); // display on
+    lcd_write(0, 0x01); // clear
 }
 /*---display---*/
 void display_time(unsigned char pos, unsigned int dat)
