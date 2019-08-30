@@ -29,8 +29,11 @@ inline void board_init()
     //init clock
     {
         CLKSEL0 |= 0x04;
-        while (CLKSTA & 0x01)
-            ;
+        while (1)
+        {
+            if (CLKSTA & 0x01)
+                break;
+        }
         CLKSEL0 = 0x05;
     }
     //init gpio
