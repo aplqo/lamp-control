@@ -79,7 +79,7 @@ void main_init()
         TCCR3A = 0x04;
         OCR3A = 15625;
         TIMSK3 = 0x01;
-        OCR4C = 125;
+        OCR4C = 177;
         TIMSK4 = 0x01;
     }
     //check the lamp

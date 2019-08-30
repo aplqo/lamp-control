@@ -2,7 +2,7 @@
 #include "var.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
-#define t4_clock 0x80
+#define t4_clock 0x08
 
 struct status
 {
