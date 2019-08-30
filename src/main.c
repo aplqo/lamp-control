@@ -35,6 +35,9 @@ inline void board_init()
                 break;
         }
         CLKSEL0 = 0x05;
+        //init pll
+        PLLFRQ = 0x04;
+        PLLCSR = 0x13;
     }
     //init gpio
     {
