@@ -1,47 +1,39 @@
+#include "bit.h"
 #include <avr/io.h>
 #include <util/delay.h>
-/*---io port operation---*/
-#define set "sbi"
-#define clr "cbi"
-#define en(op) asm(op " %0,0x05" ::"i"(_SFR_IO_ADDR(PORTF)) \
-                   :)
-#define rw(op) asm(op " %0,0x07" ::"i"(_SFR_IO_ADDR(PORTF)) \
-                   :)
-#define rs(op) asm(op " %0,0x06" ::"i"(_SFR_IO_ADDR(PORTF)) \
-                   :)
 /*---lcd driver--- */
 static void pulse()
 {
-    en(clr);
+    lcd_en(clr);
     _delay_us(1);
-    en(set);
+    lcd_en(set);
     _delay_us(1);
-    en(clr);
+    lcd_en(clr);
 }
 unsigned char lcd_read()
 {
     unsigned char dat = 0x00;
     DDRB = 0x00;
     PORTB = 0x00;
-    rw(set);
+    lcd_rw(set);
     asm("nop");
 
-    en(set);
+    lcd_en(set);
     asm("nop");
     dat = PINB & 0xf0;
     _delay_us(1);
-    en(clr);
+    lcd_en(clr);
     _delay_us(100);
 
-    en(set);
+    lcd_en(set);
     asm("nop");
     dat |= PINB >> 4;
     _delay_us(1);
-    en(clr);
+    lcd_en(clr);
     _delay_us(100);
 
-    rs(clr);
-    rw(clr);
+    lcd_rs(clr);
+    lcd_rw(clr);
     DDRB = 0xf0;
     return dat;
 }
@@ -55,13 +47,13 @@ static void lcd_writeDirect(unsigned char rs, unsigned char dat) //write directl
 {
     if (rs)
     {
-        rs(set);
+        lcd_rs(set);
     }
 
     lcd_write4bit(dat & 0xf0); // write high
     lcd_write4bit(dat << 4); //write low
 
-    rs(clr);
+    lcd_rs(clr);
 
     PORTB = 0xf0;
 }
@@ -73,8 +65,8 @@ void lcd_write(unsigned char rs, unsigned char dat)
 }
 void lcd_init()
 {
-    rs(clr);
-    rw(clr);
+    lcd_rs(clr);
+    lcd_rw(clr);
     _delay_ms(15);
 
     lcd_write4bit(0x30);

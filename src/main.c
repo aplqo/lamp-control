@@ -14,6 +14,7 @@ PF5: lcd1602 E
 PF6: lcd1602 RS
 PF7: lcd1602 RW
 */
+#include "bit.h"
 #include "lamp.h"
 #include "lcd.h"
 #include "measure.h"
@@ -93,8 +94,7 @@ void main_init()
         lamp.Switch = (PIND & 0x02) ? 0xff : 0x00;
         if ((lamp.Light & lamp.Switch) ^ lamp.On)
         {
-            asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
-                :);
+            lampRelay(set);
             TCCR4B = t4_clock;
         }
     }

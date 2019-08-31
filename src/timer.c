@@ -1,3 +1,4 @@
+#include "bit.h"
 #include "ir.h"
 #include "var.h"
 #include <avr/interrupt.h>
@@ -76,8 +77,7 @@ ISR(TIMER1_OVF_vect)
             flag |= 0x4a;
             tmp = mode;
             mode = BELL;
-            asm("sbi %0,0x04" ::"i"(_SFR_IO_ADDR(PORTF))
-                :);
+            bel(set);
             return;
         }
     }
@@ -100,8 +100,7 @@ ISR(TIMER3_OVF_vect)
             flag |= 0x46;
             tmp = mode;
             mode = BELL;
-            asm("sbi %0,0x04" ::"i"(_SFR_IO_ADDR(PORTF))
-                :);
+            bel(set);
             return;
         }
     }

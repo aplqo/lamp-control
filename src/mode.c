@@ -1,3 +1,4 @@
+#include "bit.h"
 #include "ir.h"
 #include "lamp.h"
 #include "lcd.h"
@@ -96,8 +97,7 @@ void ir_bell()
         return;
     flag &= 0xf3;
     flag1 &= 0xfb;
-    asm("cbi %0,0x04" ::"i"(_SFR_IO_ADDR(PORTF))
-        :);
+    bel(clr);
     flag |= 0x02;
     mode = tmp;
     flag &= 0x7f;
@@ -134,8 +134,7 @@ ISR(TIMER0_COMPB_vect)
     i++;
     if (i == 63)
     {
-        asm("sbi %0,0x04" ::"i"(_SFR_IO_ADDR(PINF))
-            :);
+        tog_bel;
         i = 0;
     }
 }

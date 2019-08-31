@@ -1,3 +1,4 @@
+#include "bit.h"
 #include "ir.h"
 #include "var.h"
 #include <avr/interrupt.h>
@@ -53,17 +54,13 @@ void ir_lamp()
         flag = flag ^ 0x01;
         if (flag & 0x01)
         {
-            asm("cbi %0,0x07;" ::"i"(_SFR_IO_ADDR(PORTC))
-                :);
-            asm("sbi %0,0x00;" ::"i"(_SFR_IO_ADDR(EIMSK))
-                :);
+            led_auto(clr);
+            int0(set);
         }
         else
         {
-            asm("sbi %0,0x07" ::"i"(_SFR_IO_ADDR(PORTC))
-                :);
-            asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(EIMSK))
-                :);
+            led_auto(set);
+            int0(clr);
         }
         break;
     case NEXT:
@@ -78,8 +75,7 @@ void ir_lamp()
         flag1 &= 0xfb;
         if (!(flag & 0x0c))
         {
-            asm("cbi %0,0x04" ::"i"(_SFR_IO_ADDR(PORTF))
-                :);
+            bel(clr);
         }
         TCCR0B = 0x01;
         break;
@@ -89,14 +85,12 @@ void ir_lamp()
             flag1 = flag1 ^ 0x01;
             if (lamp.On & (flag1 & 0x01))
             {
-                asm("sbi %0,0x00" ::"I"(_SFR_IO_ADDR(PORTF))
-                    :);
+                lampRelay(set);
                 TCCR4B = t4_clock;
             }
             else
             {
-                asm("cbi  %0,0x00" ::"I"(_SFR_IO_ADDR(PORTF))
-                    :);
+                lampRelay(clr);
                 TCCR4B = 0x00;
                 TC4H = 0;
                 TCNT4 = 0;
@@ -115,14 +109,12 @@ ISR(INT0_vect)
     if ((lamp.Light && lamp.Switch) ^ lamp.On)
     {
         TCCR4B = t4_clock;
-        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
-            :);
+        lampRelay(set);
     }
     else
     {
         TCCR4B = 0x00;
-        asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
-            :);
+        lampRelay(clr);
     }
 }
 ISR(INT1_vect)
@@ -133,14 +125,12 @@ ISR(INT1_vect)
     if ((lamp.Light && lamp.Switch) ^ lamp.On)
     {
         TCCR4B = t4_clock;
-        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
-            :);
+        lampRelay(set);
     }
     else
     {
         TCCR4B = 0x00;
-        asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
-            :);
+        lampRelay(clr);
     }
 t:;
     if (flag1 & 0x02)
@@ -173,14 +163,12 @@ ISR(INT3_vect)
     }
     if (expect ^ lamp.On)
     {
-        asm("sbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
-            :);
+        lampRelay(set);
         TCCR4B = t4_clock;
     }
     else
     {
-        asm("cbi %0,0x00" ::"i"(_SFR_IO_ADDR(PORTF))
-            :);
+        lampRelay(clr);
         TCCR4B = 0x00;
     }
 }
