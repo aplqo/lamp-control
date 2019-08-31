@@ -44,10 +44,10 @@ inline void board_init()
     {
         DDRB = 0xf0;
         DDRC = 0x80;
-        DDRD = 0x00;
+        DDRD = 0x10;
         DDRE = 0x00;
         DDRF = 0xf3;
-        PORTD = 0x0f;
+        PORTD = 0x1f;
         PORTE = 0x40;
     }
     //init usart

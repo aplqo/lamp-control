@@ -1,3 +1,4 @@
+#include "bit.h"
 #include "set.h"
 #include "var.h"
 #include <avr/interrupt.h>
@@ -93,4 +94,5 @@ ISR(USART1_RX_vect)
 {
     ir = UDR1;
     flag |= 0x80;
+    led_rx(clr);
 }

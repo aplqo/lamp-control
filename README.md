@@ -17,6 +17,7 @@ PD1|D2|input|INT1|Human infared sensor|||
 PD2|D0|input|USART RXD|IR decoder|Receive IR code|
 PD3|D1|input|INT3|light sensor on lamp|check lamp|Use digital seneor
 PD4|D4|input|ICP1|light sensor on lamp|Measuring delay|Connect to PD3
+PD5|-|output|Digital I/O|LED IR rx|LED IR rx|LED is on board
 PE6|D7|input|Digital I/O|Nothing|Mode select|
 PF0|A5|output|Digital I/O|Relay for controling lamp|||Connect NO;in:high
 PF1|A4|output|Digital I/O|Relay for power||Connect NO;in:high

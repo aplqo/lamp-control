@@ -25,6 +25,8 @@
 /*led port*/
 #define led_auto(op) asm(op " %0,0x07" ::"i"(_SFR_IO_ADDR(PORTC)) \
                          :)
+#define led_rx(op) asm(op " %0,0x05" ::"i"(_SFR_IO_ADDR(PORTD)) \
+                       :)
 /*interrupt enable*/
 #define int0(op) asm(op " %0,0x00" ::"i"(_SFR_IO_ADDR(EIMSK)) \
                      :)

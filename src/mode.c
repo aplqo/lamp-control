@@ -126,6 +126,7 @@ void ir_ctrl()
         }
     }
     flag &= 0x7f;
+    led_rx(set);
 }
 
 ISR(TIMER0_COMPB_vect)
