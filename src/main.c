@@ -60,7 +60,6 @@ inline void board_init()
     lcd_init();
     //power save
     PRR0 = 0x85;
-    PRR1 = 0x80;
 }
 void main_init()
 {
