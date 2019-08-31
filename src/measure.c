@@ -23,8 +23,9 @@ void measure()
     }
     display_str(0x00, 12, "Connect line");
     display_str(0x40, 14, "And close lamp");
-    while (ir != START)
+    while ((flag & 0x80) && (ir == START))
         ;
+    flag &= 0x7f;
     lcd_write(0, 0x01);
 
     unsigned int t[2];
