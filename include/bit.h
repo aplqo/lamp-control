@@ -28,4 +28,7 @@
 /*interrupt enable*/
 #define int0(op) asm(op " %0,0x00" ::"i"(_SFR_IO_ADDR(EIMSK)) \
                      :)
+/*toggle bell state*/
+#define tog_bel asm("sbi %0,0x04" ::"i"(_SFR_IO_ADDR(PINF)) \
+                    :)
 #endif
