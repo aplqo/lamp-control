@@ -3,10 +3,10 @@
 #include "lcd.h"
 #include "set.h"
 #include "var.h"
-#include <avr/delay.h>
 #include <avr/eeprom.h>
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <util/delay.h>
 
 #define clock 0x0b
 volatile unsigned int time = 0;
@@ -23,7 +23,7 @@ void measure()
     }
     display_str(0x00, 12, "Connect line");
     display_str(0x40, 14, "And close lamp");
-    while (ir == START)
+    while (ir != START)
         ;
     lcd_write(0, 0x01);
 
