@@ -35,10 +35,7 @@ inline void board_init()
             if (CLKSTA & 0x01)
                 break;
         }
-        CLKSEL0 = 0x05;
-        //init pll
-        PLLFRQ = 0x04;
-        PLLCSR = 0x13;
+        CLKSEL0 &= 0xf7;
     }
     //init gpio
     {
